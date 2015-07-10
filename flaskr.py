@@ -55,13 +55,14 @@ def show_entries():
 def add_entry():
 	if not session.get('logged_in'):
 		abort(401)
-	g.db.execute('insert into entries (title, text) values (?,?)'),
+	g.db.execute('insert into entries (title, text) values (?,?)',
 			[request.form['title'], request.form['text']])
 	g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
 
 # Login, check password, return error if invalid
+@app.route('/login', methods=['GET','POST'])
 def login():
 	error = None
 	if request.method == 'POST':
@@ -76,10 +77,13 @@ def login():
 	return render_template('login.html', error=error)
 
 # Logout
+@app.route('/logout')
 def logout():
 	session.pop('logged_in', None)
 	flash('You were logged out')
 	return redirect(url_for('show_entries'))
+
+
 
 # If this is run directly, start running the app.
 if __name__ == '__main__':
